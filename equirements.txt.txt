@@ -1,0 +1,6 @@
+streamlit
+python-dotenv
+langchain
+langchain-openai
+langchain-groq
+psycopg2-binary
