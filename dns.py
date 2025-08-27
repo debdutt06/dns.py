@@ -4,6 +4,7 @@ from typing import Callable, Dict, Iterator, Optional
 from dotenv import load_dotenv
 import streamlit as st
 
+
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables.history import RunnableWithMessageHistory
@@ -36,6 +37,8 @@ STYLE RULES:
 # ---------- Streamlit UI setup ----------
 st.set_page_config(page_title="Hector", page_icon="🤖")
 st.title("💬 Hector ")
+st.sidebar.text(f"OpenAI key loaded: {bool(os.getenv('OPENAI_API_KEY'))}")
+st.sidebar.text(f"Groq key loaded: {bool(os.getenv('GROQ_API_KEY'))}")
 
 # ---------- Model selector (define before use) ----------
 model_choice = st.sidebar.selectbox(
