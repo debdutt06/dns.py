@@ -63,19 +63,23 @@ def inject_gali(text: str) -> str:
     num_galis = random.randint(1, 3)
     galis = [random.choice(gali_dict) for _ in range(num_galis)]
 
-    # If placeholder present, replace one by one
+    # If placeholders exist, replace them one by one
     if "{{gali}}" in text:
         for g in galis:
             if "{{gali}}" in text:
                 text = text.replace("{{gali}}", g, 1)
         return text
 
-    # Otherwise, scatter them across the text
+    # If no placeholder, scatter galis randomly
     parts = text.split()
     for g in galis:
-        idx = random.randint(0, len(parts)) if parts else 0
-        parts.insert(idx, g)
+        if parts:
+            idx = random.randint(0, len(parts))
+            parts.insert(idx, g)
+        else:
+            parts.append(g)
     return " ".join(parts)
+
 
 # ---------- Streamlit UI setup ----------
 st.set_page_config(page_title="Hector", page_icon="🤖")
