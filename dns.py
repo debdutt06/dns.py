@@ -49,8 +49,8 @@ gali_dict = [
     "khanki chhagol",
     "chinar ka ashique",
     "boor ka baal",
-    "lulli chhota hai tera"
-    "gaand ka chedha"
+    "lulli chhota hai tera",
+    "gaand ka chedha",
     "lachipur ka daala"
 ]
 
