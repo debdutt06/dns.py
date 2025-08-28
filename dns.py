@@ -1,13 +1,14 @@
 # dns.py
 import os
+import random
 from typing import Callable, Dict, Iterator, Optional
 from dotenv import load_dotenv
 import streamlit as st
 
-
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.runnables import RunnableLambda
 from langchain_community.chat_message_histories import (
     PostgresChatMessageHistory,
     ChatMessageHistory,  # in-memory fallback
@@ -36,15 +37,14 @@ STYLE RULES:
 -Always tie jokes to school nostalgia: teachers, punishments, crushes, canteen samosas, basketball ground, idli scams.
 -If a speaker label appears (e.g., “⚔️ Lambu:”), Hector should roast that person directly. And only you will reply that is hector with desi abuse.
 -Insert desi gali with a placeholder → {{gali}}.
--Example: “Arre ⚔️ Lambu, tu toh basketball court mein bhi {{gali}} tha 🤣.”
--Example: "{{gali}} Tiwari ka tota. Manager se gaand mara liya.
+"""
 
 # ---------- Gali Dictionary ----------
 gali_dict = [
     "bhosdiwala",
     "ullu ka pattha",
     "randi ka bhatar",
-    "jhat  ka baal",
+    "jhat ka baal",
     "daala",
     "khanki chhagol",
     "chinar ka ashique",
@@ -55,10 +55,23 @@ gali_dict = [
 ]
 
 def inject_gali(text: str) -> str:
-    """Replace {{gali}} placeholder with random gali."""
+    """Inject 1-3 random galis into the text."""
+    num_galis = random.randint(1, 3)
+    galis = [random.choice(gali_dict) for _ in range(num_galis)]
+
+    # If placeholder present, replace one by one
     if "{{gali}}" in text:
-        return text.replace("{{gali}}", random.choice(gali_dict))
-    return text
+        for g in galis:
+            if "{{gali}}" in text:
+                text = text.replace("{{gali}}", g, 1)
+        return text
+
+    # Otherwise, scatter them across the text
+    parts = text.split()
+    for g in galis:
+        idx = random.randint(0, len(parts)) if parts else 0
+        parts.insert(idx, g)
+    return " ".join(parts)
 
 # ---------- Streamlit UI setup ----------
 st.set_page_config(page_title="Hector", page_icon="🤖")
@@ -66,7 +79,7 @@ st.title("💬 Hector ")
 st.sidebar.text(f"OpenAI key loaded: {bool(os.getenv('OPENAI_API_KEY'))}")
 st.sidebar.text(f"Groq key loaded: {bool(os.getenv('GROQ_API_KEY'))}")
 
-# ---------- Model selector (define before use) ----------
+# ---------- Model selector ----------
 model_choice = st.sidebar.selectbox(
     "Choose LLM",
     [
@@ -98,9 +111,10 @@ prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}"),
 ])
 
-runnable = prompt | llm | StrOutputParser()
+# ✅ Wrap with gali injector
+runnable = prompt | llm | StrOutputParser() | RunnableLambda(lambda x: inject_gali(x))
 
-# ---------- Message history factory (PG or in-memory) ----------
+# ---------- Message history factory ----------
 def _make_history_factory() -> Callable[[str], ChatMessageHistory]:
     pg_url = os.getenv("DATABASE_URL")
     if pg_url:
@@ -144,7 +158,7 @@ def stream_reply(user_text: str, session_id: str, speaker: Optional[str] = None)
         {"input": user_text},
         config={"configurable": {"session_id": session_id}},
     ):
-        yield chunk
+        yield inject_gali(chunk)   # ✅ Inject gali on stream
 
 def clear_history(session_id: str) -> None:
     hist = _history_factory(session_id)
