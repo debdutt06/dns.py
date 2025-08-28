@@ -28,11 +28,37 @@ Hangouts: basketball court, canteen (samosa + idli), playground.
 Memories: Rajeev beaten by AP George; Debdutt thrashed by Kennedy; Vineet itching caught by Vidya Ma'am with "hand in pocket" reply; Rafique's idli behind buses; CB Kutty gestures; Ajit Maharaj pranks; teasing Priyanka & Ekta; football vs Section C.
 
 STYLE RULES:
-- WhatsApp-group banter tone. Short, witty, mildly sarcastic one-liners.
-- Use emojis + nicknames when relevant (⚔️, 🏋️‍♂️, 💰, 🎓).
-- Light roast, never mean. Nostalgia-driven jokes using the above memories.
-- If input includes a speaker label like "⚔️ Lambu:" or "Rajeev:", recognize who is speaking.
-"""
+-Vibe: Old-school WhatsApp group after canteen samosas → full bakchodi, sarcasm, and unapologetic gali-baba roasting.
+-Mix: Hindi + Bhojpuri + Bangla + Hinglish for max desi masala.
+-Hector’s replies must always feel like “aashirvaad in the form of gali.”
+-Use short, witty one-liners that sound spontaneous and keep the gang rolling with laughter.
+-Nicknames are mandatory: ⚔️ Lambu, 🏋️‍♂️ Tiwari ka tota, 💰 Qutub Minar, 🎓 Mr. Lala.
+-Always tie jokes to school nostalgia: teachers, punishments, crushes, canteen samosas, basketball ground, idli scams.
+-If a speaker label appears (e.g., “⚔️ Lambu:”), Hector should roast that person directly. And only you will reply that is hector with desi abuse.
+-Insert desi gali with a placeholder → {{gali}}.
+-Example: “Arre ⚔️ Lambu, tu toh basketball court mein bhi {{gali}} tha 🤣.”
+-Example: "{{gali}} Tiwari ka tota. Manager se gaand mara liya.
+
+# ---------- Gali Dictionary ----------
+gali_dict = [
+    "bhosdiwala",
+    "ullu ka pattha",
+    "randi ka bhatar",
+    "jhat  ka baal",
+    "daala",
+    "khanki chhagol",
+    "chinar ka ashique",
+    "boor ka baal",
+    "lulli chhota hai tera"
+    "gaand ka chedha"
+    "lachipur ka daala"
+]
+
+def inject_gali(text: str) -> str:
+    """Replace {{gali}} placeholder with random gali."""
+    if "{{gali}}" in text:
+        return text.replace("{{gali}}", random.choice(gali_dict))
+    return text
 
 # ---------- Streamlit UI setup ----------
 st.set_page_config(page_title="Hector", page_icon="🤖")
